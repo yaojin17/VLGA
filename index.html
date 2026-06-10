@@ -46,8 +46,8 @@ body{
 }
 h1{
   font-family:var(--sans);font-weight:900;color:var(--black);
-  font-size:clamp(28px,4.4vw,42px);line-height:1.18;letter-spacing:-0.015em;
-  max-width:21ch;
+  font-size:clamp(27px,4.4vw,42px);line-height:1.18;letter-spacing:-0.015em;
+  max-width:24ch;text-wrap:balance;
 }
 h1 .acro{color:var(--blue)}
 .authors{margin-top:26px;font-family:var(--sans);font-size:16.5px;font-weight:700;line-height:1.9}
@@ -57,13 +57,15 @@ h1 .acro{color:var(--blue)}
 .affil{margin-top:8px;font-family:var(--sans);font-size:14.5px;color:var(--muted)}
 .affil sup{font-size:.78em}
 .notes{margin-top:4px;font-family:var(--sans);font-size:13px;color:var(--muted)}
-.hero-logos{
-  display:flex;align-items:center;gap:26px;margin-top:34px;
+.hero-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;margin-top:32px;
 }
+.hero-logos{display:flex;align-items:center;gap:26px}
 .hero-logos img{display:block;opacity:.92}
 .hero-logos .uber{height:22px}
 .hero-logos .uva{height:30px}
-.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.btnrow{display:flex;flex-wrap:wrap;gap:12px}
 .btn{
   display:inline-flex;align-items:center;gap:9px;
   font-family:var(--sans);font-weight:700;font-size:15px;text-decoration:none;
@@ -186,7 +188,7 @@ footer{margin-top:90px;background:var(--box);padding:40px 0 44px}
 <!-- ================= HERO ================= -->
 <header class="hero wrap">
   <div class="titlebox">
-    <h1><span class="acro">VLGA</span>: Vision&#8209;Language&#8209;Geometry&#8209;Action Models for Autonomous Driving</h1>
+    <h1><span class="acro">VLGA</span>: Vision-Language-Geometry-Action Models for Autonomous Driving</h1>
     <p class="authors">
       Jin&nbsp;Yao<sup>1,2</sup>, Dhruva&nbsp;Dixith&nbsp;Kurra<sup>1</sup>, Tom&nbsp;Lampo<sup>1</sup>,
       Zezhou&nbsp;Cheng<sup>2&dagger;</sup>, Danhua&nbsp;Guo<sup>1</sup>, Burhan&nbsp;Yaman<sup>1&dagger;&Dagger;</sup>
@@ -194,6 +196,7 @@ footer{margin-top:90px;background:var(--box);padding:40px 0 44px}
     <p class="affil"><sup>1</sup>Uber AV Labs &emsp; <sup>2</sup>University of Virginia</p>
     <p class="notes">&dagger; Corresponding authors &ensp;&middot;&ensp; &Dagger; Project Lead</p>
 
+    <div class="hero-bottom">
     <div class="btnrow">
       <span class="btn btn-soon">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
@@ -212,6 +215,7 @@ footer{margin-top:90px;background:var(--box);padding:40px 0 44px}
     <div class="hero-logos">
       <img class="uber" src="static/uber_logo.png" alt="Uber">
       <img class="uva" src="static/uva_logo.svg" alt="University of Virginia">
+    </div>
     </div>
   </div>
 </header>
