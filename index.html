@@ -1,444 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving</title>
-<meta name="description" content="VLGA is the first vision-language-action driving model supervised to reconstruct the dense 3D world it drives through, via a dedicated geometry expert trained with per-pixel pointmap regression against LiDAR.">
-<meta property="og:title" content="VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving">
-<meta property="og:description" content="The first VLA driving model supervised to reconstruct the dense 3D world it drives through.">
-<meta property="og:image" content="https://yaojin17.github.io/VLGA/static/framework.webp">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-<style>
-:root{
-  --blue:#276EF1;
-  --black:#000000;
-  --fg:#1A1A1A;
-  --muted:#555E68;
-  --bg:#FFFFFF;
-  --box:#F5F6F7;
-  --line:#E4E7EA;
-  --sans:'Lato',-apple-system,sans-serif;
-  --serif:'Source Serif 4',Georgia,serif;
-  --radius:18px;
-  --pad:36px; /* unified box inset; boxes bleed outward by the same amount */
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  font-family:var(--serif);
-  font-size:17.5px;line-height:1.65;color:var(--fg);background:var(--bg);
-  -webkit-font-smoothing:antialiased;
-}
-::selection{background:var(--blue);color:#fff}
-.wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  <meta charset="utf-8">
+  <meta name="description"
+        content="VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving. The first vision-language-action model supervised to reconstruct the dense 3D world it drives through.">
+  <meta name="keywords" content="VLGA, Vision-Language-Action, Autonomous Driving, 3D Geometry, Pointmap, nuScenes, Bench2Drive, VLA">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving</title>
 
-/* one text column: boxed content aligns with prose; box backgrounds bleed out */
-.bleed{padding-left:var(--pad);padding-right:var(--pad)}
-@media(min-width:1100px){
-  .bleed,.stats{margin-left:calc(-1*var(--pad));margin-right:calc(-1*var(--pad))}
-}
-.justify{text-align:justify;hyphens:auto}
+  <!-- Social Media Meta Tags -->
+  <meta property="og:title" content="VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving">
+  <meta property="og:description" content="The first vision-language-action model supervised to reconstruct the dense 3D world it drives through.">
+  <meta property="og:image" content="https://yaojin17.github.io/VLGA/static/images/framework.webp">
+  <meta property="og:url" content="https://yaojin17.github.io/VLGA/">
+  <link rel="canonical" href="https://yaojin17.github.io/VLGA/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving">
+  <meta name="twitter:description" content="The first vision-language-action model supervised to reconstruct the dense 3D world it drives through.">
+  <meta name="twitter:image" content="https://yaojin17.github.io/VLGA/static/images/framework.webp">
 
-/* ---------- hero: the paper's title box, alive ---------- */
-.hero{padding:42px 0 0}
-.titlebox{
-  position:relative;background:var(--box);border-radius:var(--radius);
-  padding-top:50px;padding-bottom:42px;overflow:hidden;
-}
-.titlebox::before{ /* the kicker bar from uber.cls */
-  content:"";position:absolute;left:15px;top:56px;width:5px;height:52px;
-  background:var(--black);border-radius:99px;
-}
-h1{
-  font-family:var(--sans);font-weight:900;color:var(--black);
-  font-size:clamp(27px,4.2vw,40px);line-height:1.18;letter-spacing:-0.015em;
-  text-wrap:balance;
-}
-h1 .acro{color:var(--blue)}
-.authors{margin-top:26px;font-family:var(--sans);font-size:16.5px;font-weight:700;line-height:1.9}
-.authors a{color:var(--fg);text-decoration:none;border-bottom:1.5px solid transparent;transition:border-color .2s,color .2s}
-.authors a:hover{color:var(--blue);border-bottom-color:var(--blue)}
-.authors sup{font-weight:400;color:var(--muted);font-size:.72em}
-.affil{margin-top:8px;font-family:var(--sans);font-size:14.5px;color:var(--muted)}
-.affil sup{font-size:.78em}
-.notes{margin-top:4px;font-family:var(--sans);font-size:13px;color:var(--muted)}
-.hero-bottom{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:24px;flex-wrap:wrap;margin-top:32px;
-}
-.hero-logos{display:flex;align-items:center;gap:26px}
-.hero-logos img{display:block;opacity:.92}
-.hero-logos .uber{height:22px}
-.hero-logos .uva{height:30px}
-.btnrow{display:flex;flex-wrap:wrap;gap:12px}
-.btn{
-  display:inline-flex;align-items:center;gap:9px;
-  font-family:var(--sans);font-weight:700;font-size:15px;text-decoration:none;
-  padding:11px 22px;border-radius:99px;transition:transform .15s,box-shadow .15s,background .15s;
-}
-.btn svg{width:16px;height:16px;fill:currentColor}
-.btn-dark{background:var(--black);color:#fff}
-.btn-dark:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.22)}
-.btn-blue{background:var(--blue);color:#fff}
-.btn-blue:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(39,110,241,.35)}
-.btn-ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
-.btn-ghost:hover{background:var(--fg);color:#fff;transform:translateY(-2px)}
-.btn-soon{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line);cursor:default}
-.btn-soon em{font-style:normal;font-weight:400;font-size:12px;opacity:.75}
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
 
-/* ---------- sections ---------- */
-section{padding:64px 0 8px}
-.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
-.sec-num{font-family:var(--sans);font-weight:900;font-size:15px;color:var(--blue);letter-spacing:.08em}
-h2{font-family:var(--sans);font-weight:900;font-size:27px;color:var(--black);letter-spacing:-0.01em}
-.lede{font-size:18.5px;max-width:72ch}
-.lede b,.prose b{font-weight:600}
-.prose{max-width:72ch;margin-top:14px}
-.prose+.prose{margin-top:14px}
-
-/* abstract is set inside a box, like the paper */
-.abstractbox{
-  background:var(--box);border-radius:var(--radius);
-  padding-top:30px;padding-bottom:32px;
-  font-size:17px;color:var(--fg);
-}
-.abstractbox .tag{
-  font-family:var(--sans);font-weight:900;font-size:13px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--blue);display:block;margin-bottom:12px;
-}
-
-/* figures */
-figure{margin:30px 0 8px}
-.figcard{
-  background:var(--box);border-radius:var(--radius);
-  padding-top:28px;padding-bottom:28px;
-}
-.figcard img{width:100%;height:auto;display:block;border-radius:8px}
-.figcard.narrow{max-width:660px;margin:0 auto !important;padding:24px}
-figcaption{
-  margin-top:14px;font-size:14.5px;color:var(--muted);line-height:1.55;max-width:78ch;
-}
-figcaption b{font-family:var(--sans);color:var(--fg);font-weight:700}
-.gt{color:#1fae07;font-weight:600}
-.pred{color:#d18f00;font-weight:600}
-
-/* stat cards */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:30px 0 10px}
-.stat{
-  background:var(--box);border-radius:14px;padding:22px 20px 18px;position:relative;
-  transition:transform .18s,box-shadow .18s;
-}
-.stat:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(26,26,26,.08)}
-.stat .v{font-family:var(--sans);font-weight:900;font-size:32px;color:var(--black);letter-spacing:-0.02em}
-.stat .v small{font-size:17px;font-weight:700;color:var(--muted)}
-.stat .v .up{color:var(--blue)}
-.stat .k{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--blue);letter-spacing:.04em;text-transform:uppercase;margin-top:6px}
-.stat .d{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}
-
-/* tables */
-.tbl-wrap{overflow-x:auto;margin:26px 0 6px;border-radius:var(--radius);background:var(--box);padding-top:8px;padding-bottom:14px}
-table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14px;min-width:560px}
-caption{
-  caption-side:top;text-align:left;padding:14px 0 10px;
-  font-weight:700;font-size:14px;color:var(--fg);
-}
-caption .cap-note{font-weight:400;color:var(--muted)}
-th,td{padding:8px 14px;text-align:center;white-space:nowrap}
-th{font-weight:700;color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid var(--line)}
-td:first-child,th:first-child{text-align:left;padding-left:0}
-td:last-child,th:last-child{padding-right:0}
-tbody tr{border-bottom:1px solid var(--line)}
-tbody tr:last-child{border-bottom:none}
-tr.ours{background:rgba(39,110,241,.09)}
-tr.ours td{font-weight:700;color:var(--black)}
-tr.ours td:first-child{color:var(--blue)}
-td .best{font-weight:700;color:var(--black)}
-tr.ours td .best{color:var(--blue)}
-
-/* bibtex */
-.bibbox{
-  position:relative;background:var(--black);color:#E8EAED;border-radius:var(--radius);
-  padding-top:28px;padding-bottom:28px;font-family:ui-monospace,'SF Mono',Menlo,monospace;
-  font-size:13.5px;line-height:1.7;overflow-x:auto;margin-top:24px;
-}
-.bibbox .hl{color:#7BA7F7}
-.copybtn{
-  position:absolute;top:16px;right:16px;font-family:var(--sans);font-weight:700;
-  font-size:12px;color:#fff;background:rgba(255,255,255,.14);border:none;border-radius:99px;
-  padding:7px 16px;cursor:pointer;transition:background .15s;
-}
-.copybtn:hover{background:var(--blue)}
-
-/* footer */
-footer{margin-top:90px;background:var(--box);padding:40px 0 44px}
-.foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
-.foot-logos{display:flex;align-items:center;gap:24px}
-.foot-logos .uber{height:18px;opacity:.85}
-.foot-logos .uva{height:26px;opacity:.85}
-.foot p{font-family:var(--sans);font-size:13px;color:var(--muted)}
-.foot a{color:var(--blue);text-decoration:none}
-
-/* reveal on scroll */
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-.reveal.in{opacity:1;transform:none}
-
-@media(max-width:760px){
-  :root{--pad:24px}
-  .titlebox{padding-top:40px;padding-bottom:34px}
-  .titlebox::before{left:9px;top:44px;height:44px;width:4px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  section{padding:48px 0 8px}
-}
-</style>
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
 </head>
 <body>
 
-<!-- ================= HERO ================= -->
-<header class="hero wrap">
-  <div class="titlebox bleed">
-    <h1><span class="acro">VLGA</span>: Vision-Language-Geometry-Action Models for Autonomous Driving</h1>
-    <p class="authors">
-      Jin&nbsp;Yao<sup>1,2</sup>, Dhruva&nbsp;Dixith&nbsp;Kurra<sup>1</sup>, Tom&nbsp;Lampo<sup>1</sup>,
-      Zezhou&nbsp;Cheng<sup>2&dagger;</sup>, Danhua&nbsp;Guo<sup>1</sup>, Burhan&nbsp;Yaman<sup>1&dagger;&Dagger;</sup>
-    </p>
-    <p class="affil"><sup>1</sup>Uber AV Labs &emsp; <sup>2</sup>University of Virginia</p>
-    <p class="notes">&dagger; Corresponding authors &ensp;&middot;&ensp; &Dagger; Project Lead</p>
-
-    <div class="hero-bottom">
-    <div class="btnrow">
-      <span class="btn btn-soon">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
-        arXiv&nbsp;<em>coming soon</em>
-      </span>
-      <span class="btn btn-soon">
-        <svg viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
-        Code&nbsp;<em>coming soon</em>
-      </span>
-      <a class="btn btn-blue" href="#bibtex">
-        <svg viewBox="0 0 24 24"><path d="M9 7h6v2H9V7zm0 4h6v2H9v-2zm0 4h4v2H9v-2zM5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h12V5H6z"/></svg>
-        BibTeX
-      </a>
+<section class="hero">
+  <div class="hero-body" style="padding-bottom: 1rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">VLGA: Vision-Language-<span style="color: #3498db;">Geometry</span>-Action Models for Autonomous Driving</h1>
+          <div class="is-size-5 publication-authors">
+            <div class="is-size-5 publication-authors" style="display: flex; flex-wrap: wrap; justify-content: center; text-align: center;">
+              <div style="display: flex; flex-wrap: wrap; flex-basis: 100%; justify-content: center;">
+                <span class="author-block" style="margin: 0 12px;">Jin Yao<sup>1,2</sup></span>
+                <span class="author-block" style="margin: 0 12px;">Dhruva Dixith Kurra<sup>1</sup></span>
+                <span class="author-block" style="margin: 0 12px;">Tom Lampo<sup>1</sup></span>
+                <a href="https://sites.google.com/site/zezhoucheng/" class="author-block" style="margin: 0 12px; text-decoration: none;">
+                  <span>Zezhou Cheng<sup>2&dagger;</sup></span>
+                </a>
+                <span class="author-block" style="margin: 0 12px;">Danhua Guo<sup>1</sup></span>
+                <span class="author-block" style="margin: 0 12px;">Burhan Yaman<sup>1&dagger;&Dagger;</sup></span>
+              </div>
+            </div>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="margin-right: 15px;"><sup>1</sup>Uber AV Labs</span>
+            <span class="author-block"><sup>2</sup>University of Virginia</span>
+          </div>
+          <div class="is-size-7 publication-authors">
+            <span class="author-block"><sup>&dagger;</sup>Corresponding Authors &nbsp;&nbsp; <sup>&Dagger;</sup>Project Lead</span>
+          </div>
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark" style="cursor: default; opacity: 0.6;">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv (coming soon)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark" style="cursor: default; opacity: 0.6;">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (coming soon)</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="hero-logos">
-      <img class="uber" src="static/uber_logo.png" alt="Uber">
-      <img class="uva" src="static/uva_logo.svg" alt="University of Virginia">
-    </div>
-    </div>
-  </div>
-</header>
-
-<!-- ================= ABSTRACT ================= -->
-<section class="wrap reveal">
-  <div class="abstractbox bleed justify">
-    <span class="tag">Abstract</span>
-    Vision-language-action (VLA) models can describe scenes and reason about them in
-    language, yet still struggle to ground their actions in the dense 3D world around
-    them. Existing approaches either inject features from a frozen 3D foundation model
-    without an objective that ensures the policy uses them, or constrain geometry with
-    sparse box and map losses that provide no dense spatial signal. We introduce
-    <b>VLGA, the first vision-language-action model supervised to reconstruct the dense
-    3D world it drives through</b>. VLGA introduces geometry as a fourth modality
-    alongside vision, language, and action through a dedicated expert supervised by a
-    per-pixel pointmap regression loss against LiDAR. Extensive experiments conducted
-    on challenging nuScenes and Bench2Drive datasets for open-loop and closed-loop
-    evaluations, respectively, show the superiority of VLGA over counterpart VLA
-    methods. In particular, on open-loop nuScenes, VLGA sets a new state of the art
-    among VLA methods without ego status, with the lowest L2 (0.50&thinsp;m average) and
-    3-second collision rate (0.18%). On closed-loop Bench2Drive, VLGA attains the
-    state-of-the-art driving score of 79.08, +0.71 over the strongest prior VLA, at
-    comparable efficiency and comfort.
   </div>
 </section>
 
-<!-- ================= WHY ================= -->
-<section class="wrap reveal" id="motivation">
-  <div class="sec-head"><span class="sec-num">01</span><h2>One missing modality</h2></div>
-  <p class="lede justify">
-    An effective VLA driving policy needs three things at once: <b>language reasoning</b>
-    to interpret intent and context, <b>dense spatial grounding</b> to perceive the
-    continuous 3D structure of the scene, and a <b>dedicated geometry capacity</b> that
-    processes this structure with its own parameters rather than the language
-    model&rsquo;s. No existing paradigm achieves all three&mdash;sparse perception lacks dense
-    grounding, feature injection leaves no parameter budget for geometry, and
-    geometry-only policies drop language entirely. VLGA keeps all three.
-  </p>
-  <figure>
-    <div class="figcard bleed"><img src="static/paradigm.webp" alt="Comparison of paradigms for grounding driving policies in 3D geometry" loading="lazy"></div>
-    <figcaption class="justify"><b>Paradigms for grounding driving policies in 3D geometry.</b>
-      (a)&nbsp;VLAs with sparse 3D perception use structured supervision such as boxes, occupancy, and lane maps, but lack dense spatial grounding.
-      (b)&nbsp;Injection-based VLAs expose dense 3D features to the language model, but lack dedicated geometry capacity.
-      (c)&nbsp;Geometry-only policies provide dense grounding with dedicated capacity, but remove language reasoning.
-      (d)&nbsp;<b>VLGA</b> preserves all three via a parameter-isolated geometry expert supervised with dense geometry reconstruction.</figcaption>
-  </figure>
-</section>
-
-<!-- ================= METHOD ================= -->
-<section class="wrap reveal" id="method">
-  <div class="sec-head"><span class="sec-num">02</span><h2>A four-expert policy that also reconstructs</h2></div>
-  <p class="lede justify">
-    VLGA is a four-expert Mixture-of-Transformers coupled by masked joint attention: an
-    <b>understanding expert</b> for language and scene semantics, a <b>perception
-    expert</b> for sparse agent, map, and occupancy queries, a new <b>geometry
-    expert</b> for dense spatial structure, and an <b>action expert</b> that attends to
-    all three and conditions on ego status to emit the trajectory.
-  </p>
-  <p class="prose justify">
-    During training, the geometry stream is supervised by a dense per-pixel pointmap
-    regression loss against LiDAR&mdash;an explicit signal on the stream&rsquo;s 3D content
-    rather than the action loss alone. Where prior VLA driving policies see, read, and
-    act, <b>VLGA also reconstructs</b>.
-  </p>
-  <figure>
-    <div class="figcard bleed"><img src="static/framework.webp" alt="VLGA architecture: four-expert Mixture-of-Transformers" loading="lazy"></div>
-    <figcaption class="justify"><b>VLGA architecture.</b> A four-expert Mixture-of-Transformers coupled by
-      masked joint attention. The action expert attends to the understanding, perception,
-      and geometry experts and conditions on ego status to emit the trajectory; the
-      geometry expert is supervised by per-pixel pointmap regression against LiDAR.</figcaption>
-  </figure>
-</section>
-
-<!-- ================= RESULTS ================= -->
-<section class="wrap reveal" id="results">
-  <div class="sec-head"><span class="sec-num">03</span><h2>Results</h2></div>
-
-  <div class="stats">
-    <div class="stat">
-      <div class="v">0.50<small>&thinsp;m</small></div>
-      <div class="k">L2 average</div>
-      <div class="d">Lowest of all methods on nuScenes (ST-P3, without ego status)</div>
-    </div>
-    <div class="stat">
-      <div class="v">0.18<small>%</small></div>
-      <div class="k">Collision @ 3s</div>
-      <div class="d">Lowest among VLA methods at every horizon (without ego status)</div>
-    </div>
-    <div class="stat">
-      <div class="v">79.08</div>
-      <div class="k">Driving Score</div>
-      <div class="d">State of the art on closed-loop Bench2Drive, <span class="up">+0.71</span> over the prior SOTA</div>
-    </div>
-    <div class="stat">
-      <div class="v">15<small>/16</small></div>
-      <div class="k">Metrics ranked first</div>
-      <div class="d">Among VLA methods across all nuScenes planning metrics without ego status</div>
+<section class="section" style="padding-top: 1rem;">
+  <div class="container is-max-desktop">
+    <div class="box" style="background-color: #f5f5f5;">
+      <h2 class="title is-3 has-text-centered">TL;DR</h2>
+      <figure>
+        <img src="./static/images/paradigm.webp" alt="Paradigms for grounding driving policies in 3D geometry" style="border-radius: 8px;">
+        <figcaption>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p><strong>VLGA is the first vision-language-action model supervised to reconstruct the dense 3D world it drives through.</strong> Existing paradigms each miss one key capability: (a) VLAs with sparse 3D perception use structured supervision such as boxes, occupancy, and lane maps, but lack dense spatial grounding; (b) injection-based VLAs expose dense 3D features to the language model, but lack dedicated geometry capacity; (c) geometry-only driving policies provide dense grounding with dedicated capacity, but remove language reasoning. (d) <strong>VLGA</strong> preserves all three by introducing a parameter-isolated geometry expert supervised with dense geometry reconstruction.</p>
+          </div>
+        </figcaption>
+      </figure>
     </div>
   </div>
-
-  <p class="prose justify">
-    We focus on the leakage-free <b>without-ego-status</b> protocol on nuScenes, where
-    kinematic extrapolation cannot shortcut the task. VLGA-Large ranks first among VLA
-    methods on 15 of the 16 L2 and collision metrics, its ST-P3 L2 is the lowest of
-    <i>all</i> methods, and its collision rate is the lowest among VLA methods at every
-    horizon. The same pattern holds at 2B scale, indicating the improvement stems from
-    the geometry stream rather than model capacity.
-  </p>
-
-  <div class="tbl-wrap bleed">
-    <table>
-      <caption>Open-loop planning on nuScenes, without ego status <span class="cap-note">&mdash; averaged L2 (m) and collision (%) under both protocols; lower is better. Selected rows; full tables in the paper.</span></caption>
-      <thead>
-        <tr><th>Method</th><th>ST-P3 L2</th><th>ST-P3 Col.</th><th>UniAD L2</th><th>UniAD Col.</th><th>LLM</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>UniAD</td><td>0.73</td><td>0.61</td><td>1.03</td><td>0.77</td><td>&ndash;</td></tr>
-        <tr><td>SparseDrive</td><td>0.55</td><td><span class="best">0.08</span></td><td>0.99</td><td><span class="best">0.21</span></td><td>&ndash;</td></tr>
-        <tr><td>FSDrive</td><td>0.53</td><td>0.17</td><td>0.96</td><td>0.40</td><td>Qwen2-VL-3B</td></tr>
-        <tr><td>UniDriveVLA-Base</td><td>0.54</td><td>0.17</td><td>0.96</td><td>0.41</td><td>Qwen3-VL-2B</td></tr>
-        <tr><td>UniDriveVLA-Large</td><td>0.51</td><td>0.11</td><td><span class="best">0.90</span></td><td>0.27</td><td>Qwen3-VL-8B</td></tr>
-        <tr class="ours"><td>VLGA-Base (Ours)</td><td>0.52</td><td>0.14</td><td>0.95</td><td>0.35</td><td>Qwen3-VL-2B</td></tr>
-        <tr class="ours"><td>VLGA-Large (Ours)</td><td><span class="best">0.50</span></td><td>0.09</td><td><span class="best">0.90</span></td><td>0.22</td><td>Qwen3-VL-8B</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="tbl-wrap bleed">
-    <table>
-      <caption>Closed-loop driving on Bench2Drive <span class="cap-note">&mdash; official CARLA closed-loop metrics; higher is better. Selected rows; full tables in the paper.</span></caption>
-      <thead>
-        <tr><th>Method</th><th>Driving Score</th><th>Success Rate (%)</th><th>Efficiency</th><th>Comfortness</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>DriveMoE</td><td>74.22</td><td>48.64</td><td>175.96</td><td>15.31</td></tr>
-        <tr><td>Orion</td><td>77.74</td><td><span class="best">54.62</span></td><td>151.48</td><td>17.38</td></tr>
-        <tr><td>UniDriveVLA</td><td>78.37</td><td>51.82</td><td><span class="best">198.86</span></td><td>11.78</td></tr>
-        <tr class="ours"><td>VLGA (Ours)</td><td><span class="best">79.08</span></td><td>52.73</td><td>194.63</td><td>13.06</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <p class="prose justify">
-    The gains concentrate exactly where driving is hardest: long-horizon collision
-    open-loop, and closed-loop skills like <b>Give Way</b> and <b>Emergency Brake</b>
-    that demand pausing at the right offset or braking at the right distance. Skills
-    bottlenecked by reactive control or visual semantics are left largely unchanged
-    &mdash; the geometry stream sharpens the dense spatial understanding that
-    tight-clearance driving needs.
-  </p>
 </section>
 
-<!-- ================= QUALITATIVE ================= -->
-<section class="wrap reveal" id="qualitative">
-  <div class="sec-head"><span class="sec-num">04</span><h2>Seeing the geometry at work</h2></div>
-  <figure>
-    <div class="figcard bleed"><img src="static/qualitative.webp" alt="Qualitative planning comparison on nuScenes" loading="lazy"></div>
-    <figcaption class="justify"><b>Qualitative planning comparison on nuScenes.</b> Predicted 3-second
-      trajectory (<span class="pred">yellow</span>) and ground truth
-      (<span class="gt">green</span>) projected onto the front camera. VLGA stays closer
-      to the ground truth through turns and around nearby vehicles, while the baseline
-      (UniDriveVLA) drifts laterally. The two policies differ only in VLGA&rsquo;s supervised
-      geometry stream.</figcaption>
-  </figure>
-  <figure>
-    <div class="figcard narrow"><img src="static/point_traj.webp" alt="Pointmap reconstructions with predicted and ground-truth trajectories" loading="lazy"></div>
-    <figcaption class="justify"><b>What the geometry expert encodes.</b> For nuScenes validation samples,
-      the dense 3D pointmap is reconstructed from the geometry stream by the
-      training-time decoder, with the <span class="gt">green</span> ground-truth and
-      <span class="pred">yellow</span> predicted ego trajectories overlaid. The
-      reconstructions capture road surface, lane structure, and surrounding obstacles,
-      and the predicted trajectory closely tracks the ground truth.</figcaption>
-  </figure>
-</section>
-
-<!-- ================= BIBTEX ================= -->
-<section class="wrap reveal" id="bibtex">
-  <div class="sec-head"><span class="sec-num">05</span><h2>Citation</h2></div>
-  <div class="bibbox bleed">
-    <button class="copybtn" onclick="copyBib(this)">Copy</button>
-<pre id="bib">@article{yao2026vlga,
-  <span class="hl">title</span>   = {{VLGA}: Vision-Language-Geometry-Action Models for Autonomous Driving},
-  <span class="hl">author</span>  = {Yao, Jin and Kurra, Dhruva Dixith and Lampo, Tom and Cheng, Zezhou and Guo, Danhua and Yaman, Burhan},
-  <span class="hl">year</span>    = {2026}
-}</pre>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="box" style="background-color: #f5f5f5;">
+      <h2 class="title is-3 has-text-centered">Abstract</h2>
+      <div class="content has-text-justified">
+        <p>
+          Vision-language-action (VLA) models can describe scenes and reason about them in language, yet still struggle to ground their actions in the dense 3D world around them. Existing approaches either inject features from a frozen 3D foundation model without an objective that ensures the policy uses them, or constrain geometry with sparse box and map losses that provide no dense spatial signal. We introduce <strong>VLGA</strong>, the first vision-language-action model supervised to reconstruct the dense 3D world it drives through. VLGA introduces geometry as a fourth modality alongside vision, language, and action through a dedicated expert supervised by a per-pixel pointmap regression loss against LiDAR. Extensive experiments conducted on challenging nuScenes and Bench2Drive datasets for open-loop and closed-loop evaluations, respectively, show the superiority of VLGA over counterpart VLA methods. In particular, on open-loop nuScenes, VLGA sets a new state of the art among VLA methods without ego status, with the lowest L2 (0.50&thinsp;m average) and 3-second collision rate (0.18%). On closed-loop Bench2Drive, VLGA attains the state-of-the-art driving score of 79.08, +0.71 over the strongest prior VLA, at comparable efficiency and comfort.
+        </p>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
-<footer>
-  <div class="wrap foot">
-    <div class="foot-logos">
-      <img class="uber" src="static/uber_logo.png" alt="Uber">
-      <img class="uva" src="static/uva_logo.svg" alt="University of Virginia">
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="box" style="background-color: #f5f5f5;">
+      <h2 class="title is-3 has-text-centered">Method</h2>
+      <figure>
+        <img src="./static/images/framework.webp" alt="VLGA architecture" style="border-radius: 8px;">
+        <figcaption>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              <strong>VLGA architecture.</strong> A four-expert Mixture-of-Transformers coupled by masked joint attention: an <strong>understanding expert</strong> (language and scene semantics), a <strong>perception expert</strong> (sparse agent, map, and occupancy queries), our new <strong>geometry expert</strong> (dense spatial structure), and an <strong>action expert</strong> (motion planning). The action expert attends to the other three experts and conditions on ego status to emit the trajectory. During training, the geometry stream is supervised by a dense per-pixel pointmap regression loss against LiDAR&mdash;an explicit signal on the stream's 3D content rather than the action loss alone.
+            </p>
+          </div>
+        </figcaption>
+      </figure>
     </div>
-    <p>VLGA &middot; Uber AV Labs &amp; University of Virginia &middot; <a href="https://github.com/yaojin17/VLGA">github.com/yaojin17/VLGA</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="box" style="background-color: #f5f5f5;">
+      <h2 class="title is-3 has-text-centered">Results</h2>
+
+      <!-- Open-loop nuScenes -->
+      <h4 class="title is-5" style="margin-top: 1rem;">Open-loop Planning on nuScenes</h4>
+      <div class="content has-text-justified">
+        <p>
+          On the leakage-free <strong>without-ego-status</strong> protocol, VLGA-Large ranks first among VLA methods on 15 of the 16 L2 and collision metrics, its ST-P3 L2 is the lowest of <em>all</em> methods (<strong>0.50&thinsp;m</strong> average), and its collision rate is the lowest among VLA methods at every horizon (<strong>0.18%</strong> at 3&thinsp;s). Averaged L2 (m) and collision (%) under both protocols are shown below; lower is better. Selected rows&mdash;full tables in the paper.
+        </p>
+      </div>
+      <div class="table-container">
+        <table class="table is-fullwidth is-hoverable" style="background: transparent; font-size: 0.95rem;">
+          <thead>
+            <tr>
+              <th>Method</th><th>ST-P3 L2 &darr;</th><th>ST-P3 Col. &darr;</th><th>UniAD L2 &darr;</th><th>UniAD Col. &darr;</th><th>LLM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>UniAD</td><td>0.73</td><td>0.61</td><td>1.03</td><td>0.77</td><td>&ndash;</td></tr>
+            <tr><td>SparseDrive</td><td>0.55</td><td><strong>0.08</strong></td><td>0.99</td><td><strong>0.21</strong></td><td>&ndash;</td></tr>
+            <tr><td>FSDrive</td><td>0.53</td><td>0.17</td><td>0.96</td><td>0.40</td><td>Qwen2-VL-3B</td></tr>
+            <tr><td>UniDriveVLA-Base</td><td>0.54</td><td>0.17</td><td>0.96</td><td>0.41</td><td>Qwen3-VL-2B</td></tr>
+            <tr><td>UniDriveVLA-Large</td><td>0.51</td><td>0.11</td><td><strong>0.90</strong></td><td>0.27</td><td>Qwen3-VL-8B</td></tr>
+            <tr style="background-color: #eaf1fc;"><td><strong>VLGA-Base (Ours)</strong></td><td>0.52</td><td>0.14</td><td>0.95</td><td>0.35</td><td>Qwen3-VL-2B</td></tr>
+            <tr style="background-color: #eaf1fc;"><td><strong>VLGA-Large (Ours)</strong></td><td><strong>0.50</strong></td><td>0.09</td><td><strong>0.90</strong></td><td>0.22</td><td>Qwen3-VL-8B</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Closed-loop Bench2Drive -->
+      <h4 class="title is-5" style="margin-top: 2rem;">Closed-loop Driving on Bench2Drive</h4>
+      <div class="content has-text-justified">
+        <p>
+          VLGA achieves the highest Driving Score of all methods, <strong>79.08</strong>, beating the prior state of the art, UniDriveVLA, by <strong>+0.71</strong>, with improved Success Rate and Comfortness at comparable Efficiency. Official CARLA closed-loop metrics; higher is better. Selected rows&mdash;full tables in the paper.
+        </p>
+      </div>
+      <div class="table-container">
+        <table class="table is-fullwidth is-hoverable" style="background: transparent; font-size: 0.95rem;">
+          <thead>
+            <tr>
+              <th>Method</th><th>Driving Score &uarr;</th><th>Success Rate (%) &uarr;</th><th>Efficiency &uarr;</th><th>Comfortness &uarr;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>DriveMoE</td><td>74.22</td><td>48.64</td><td>175.96</td><td>15.31</td></tr>
+            <tr><td>Orion</td><td>77.74</td><td><strong>54.62</strong></td><td>151.48</td><td>17.38</td></tr>
+            <tr><td>UniDriveVLA</td><td>78.37</td><td>51.82</td><td><strong>198.86</strong></td><td>11.78</td></tr>
+            <tr style="background-color: #eaf1fc;"><td><strong>VLGA (Ours)</strong></td><td><strong>79.08</strong></td><td>52.73</td><td>194.63</td><td>13.06</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Qualitative comparison -->
+      <h4 class="title is-5" style="margin-top: 2rem;">Qualitative Planning Comparison</h4>
+      <figure>
+        <img src="./static/images/qualitative.webp" alt="Qualitative planning comparison on nuScenes" style="border-radius: 8px;">
+        <figcaption>
+          <div class="content has-text-justified" style="margin-top: 0.5rem;">
+            <p><strong>Qualitative planning comparison on the nuScenes validation set.</strong> The predicted 3-second trajectory (<span style="color: #d18f00; font-weight: bold;">yellow</span>) and ground truth (<span style="color: #1fae07; font-weight: bold;">green</span>) are projected onto the front camera. VLGA stays closer to the ground truth through turns and around nearby vehicles, while the baseline (UniDriveVLA) drifts laterally.</p>
+          </div>
+        </figcaption>
+      </figure>
+
+      <!-- Geometry stream visualization -->
+      <h4 class="title is-5" style="margin-top: 2rem;">Geometry Stream Visualization</h4>
+      <figure>
+        <div style="max-width: 70%; margin: 0 auto;">
+          <img src="./static/images/point_traj.webp" alt="Pointmap reconstructions with predicted and ground-truth trajectories" style="border-radius: 8px;">
+        </div>
+        <figcaption>
+          <div class="content has-text-justified" style="margin-top: 0.5rem;">
+            <p><strong>Pointmap reconstructions with predicted and ground-truth trajectories on nuScenes.</strong> Each row is one validation sample. Left: the six surround-camera inputs. Right: the dense 3D pointmap predicted by VLGA's geometry expert, with the <span style="color: #1fae07; font-weight: bold;">green</span> ground-truth and <span style="color: #d18f00; font-weight: bold;">yellow</span> predicted ego trajectories overlaid. The reconstructions capture road surface, lane structure, and surrounding obstacles, and the predicted trajectory closely tracks the ground truth.</p>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop">
+    <div class="box" style="background-color: #f5f5f5;">
+      <h2 class="title is-3 has-text-centered">Citation</h2>
+      <pre style="background-color: #e8e8e8; border-radius: 6px; padding: 1rem;"><code style="background: transparent;">@article{yao2026vlga,
+      title={VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving},
+      author={Jin Yao and Dhruva Dixith Kurra and Tom Lampo and Zezhou Cheng and Danhua Guo and Burhan Yaman},
+      year={2026},
+}
+</code></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed
+            under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </footer>
-
-<script>
-const io = new IntersectionObserver(es => es.forEach(e => {
-  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-}), {threshold: 0.08});
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-function copyBib(btn){
-  navigator.clipboard.writeText(document.getElementById('bib').innerText).then(() => {
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 1600);
-  });
-}
-</script>
 </body>
 </html>
