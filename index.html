@@ -149,50 +149,25 @@
       <h4 class="title is-5" style="margin-top: 1rem;">Open-loop Planning on nuScenes</h4>
       <div class="content has-text-justified">
         <p>
-          On the leakage-free <strong>without-ego-status</strong> protocol, VLGA-Large ranks first among VLA methods on 15 of the 16 L2 and collision metrics, its ST-P3 L2 is the lowest of <em>all</em> methods (<strong>0.50&thinsp;m</strong> average), and its collision rate is the lowest among VLA methods at every horizon (<strong>0.18%</strong> at 3&thinsp;s). Averaged L2 (m) and collision (%) under both protocols are shown below; lower is better. Selected rows&mdash;full tables in the paper.
+          On the leakage-free <strong>without-ego-status</strong> protocol, VLGA-Large ranks first among VLA methods on 15 of the 16 L2 and collision metrics, its ST-P3 L2 is the lowest of <em>all</em> methods (<strong>0.50&thinsp;m</strong> average), and its collision rate is the lowest among VLA methods at every horizon (<strong>0.18%</strong> at 3&thinsp;s).
         </p>
       </div>
-      <div class="table-container">
-        <table class="table is-fullwidth is-hoverable" style="background: transparent; font-size: 0.95rem;">
-          <thead>
-            <tr>
-              <th>Method</th><th>ST-P3 L2 &darr;</th><th>ST-P3 Col. &darr;</th><th>UniAD L2 &darr;</th><th>UniAD Col. &darr;</th><th>LLM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>UniAD</td><td>0.73</td><td>0.61</td><td>1.03</td><td>0.77</td><td>&ndash;</td></tr>
-            <tr><td>SparseDrive</td><td>0.55</td><td><strong>0.08</strong></td><td>0.99</td><td><strong>0.21</strong></td><td>&ndash;</td></tr>
-            <tr><td>FSDrive</td><td>0.53</td><td>0.17</td><td>0.96</td><td>0.40</td><td>Qwen2-VL-3B</td></tr>
-            <tr><td>UniDriveVLA-Base</td><td>0.54</td><td>0.17</td><td>0.96</td><td>0.41</td><td>Qwen3-VL-2B</td></tr>
-            <tr><td>UniDriveVLA-Large</td><td>0.51</td><td>0.11</td><td><strong>0.90</strong></td><td>0.27</td><td>Qwen3-VL-8B</td></tr>
-            <tr style="background-color: #eaf1fc;"><td><strong>VLGA-Base (Ours)</strong></td><td>0.52</td><td>0.14</td><td>0.95</td><td>0.35</td><td>Qwen3-VL-2B</td></tr>
-            <tr style="background-color: #eaf1fc;"><td><strong>VLGA-Large (Ours)</strong></td><td><strong>0.50</strong></td><td>0.09</td><td><strong>0.90</strong></td><td>0.22</td><td>Qwen3-VL-8B</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <figure>
+        <img src="./static/images/table_nuscenes.webp" alt="Open-loop planning results on the nuScenes validation split" style="border-radius: 8px;">
+      </figure>
 
       <!-- Closed-loop Bench2Drive -->
       <h4 class="title is-5" style="margin-top: 2rem;">Closed-loop Driving on Bench2Drive</h4>
       <div class="content has-text-justified">
         <p>
-          VLGA achieves the highest Driving Score of all methods, <strong>79.08</strong>, beating the prior state of the art, UniDriveVLA, by <strong>+0.71</strong>, with improved Success Rate and Comfortness at comparable Efficiency. Official CARLA closed-loop metrics; higher is better. Selected rows&mdash;full tables in the paper.
+          VLGA achieves the highest Driving Score of all methods, <strong>79.08</strong>, beating the prior state of the art, UniDriveVLA, by <strong>+0.71</strong>, with improved Success Rate and Comfortness at comparable Efficiency.
         </p>
       </div>
-      <div class="table-container">
-        <table class="table is-fullwidth is-hoverable" style="background: transparent; font-size: 0.95rem;">
-          <thead>
-            <tr>
-              <th>Method</th><th>Driving Score &uarr;</th><th>Success Rate (%) &uarr;</th><th>Efficiency &uarr;</th><th>Comfortness &uarr;</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>DriveMoE</td><td>74.22</td><td>48.64</td><td>175.96</td><td>15.31</td></tr>
-            <tr><td>Orion</td><td>77.74</td><td><strong>54.62</strong></td><td>151.48</td><td>17.38</td></tr>
-            <tr><td>UniDriveVLA</td><td>78.37</td><td>51.82</td><td><strong>198.86</strong></td><td>11.78</td></tr>
-            <tr style="background-color: #eaf1fc;"><td><strong>VLGA (Ours)</strong></td><td><strong>79.08</strong></td><td>52.73</td><td>194.63</td><td>13.06</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <figure>
+        <div style="max-width: 85%; margin: 0 auto;">
+          <img src="./static/images/table_b2d.webp" alt="Closed-loop driving results on Bench2Drive" style="border-radius: 8px;">
+        </div>
+      </figure>
 
       <!-- Qualitative comparison -->
       <h4 class="title is-5" style="margin-top: 2rem;">Qualitative Planning Comparison</h4>
