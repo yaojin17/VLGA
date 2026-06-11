@@ -1,6 +1,6 @@
 # VLGA: Vision-Language-Geometry-Action Models for Autonomous Driving
 
-[**Project Page**](https://yaojin17.github.io/VLGA/) | **arXiv (coming soon)**
+[**Project Page**](https://yaojin17.github.io/VLGA/) | [**arXiv**](https://arxiv.org/abs/2606.12396)
 
 ---
 
